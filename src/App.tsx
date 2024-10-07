@@ -1,58 +1,25 @@
-import { useEffect, useMemo, useState } from "react";
 import "./App.css";
-import { quotes } from "./quotes";
-
-const getRandomQuoteInterval = () => {
-  return (
-    Math.floor(Math.random() * (MAX_DURATION * 2 - MIN_DURATION + 1)) +
-    MIN_DURATION
-  );
-};
+import { useStore } from "./useStore";
+import { useQuoteSetter } from "./useQuoteSetter";
+import { useScroller } from "./useScroller";
+import { Letter } from "./Letter";
 
 function App() {
-  const [showQuote, setShowQuote] = useState(false);
-  const [quoteInterval, setQuoteInterval] = useState(getRandomQuoteInterval());
+  const showQuote = useStore((state) => state.showQuote);
+  const currentQuote = useStore((state) => state.currentQuote);
 
-  const [currentQuote, setCurrentQuote] = useState(quotes[0]);
-
-  // TODO scroll if overflow
-
-  useEffect(() => {
-    let timeout: number | undefined;
-
-    const showRandomQuote = () => {
-      const randomIndex = Math.floor(Math.random() * quotes.length);
-      const quote = quotes[randomIndex];
-      setCurrentQuote(quote);
-      setShowQuote(true);
-
-      // Calculate display duration based on quote length
-      const displayDuration = Math.max(3000, quote.length * 100); // Minimum 2 seconds, then 50ms per character
-
-      timeout = setTimeout(() => {
-        setShowQuote(false);
-        setQuoteInterval(getRandomQuoteInterval());
-      }, displayDuration);
-    };
-
-    const timer = setTimeout(showRandomQuote, quoteInterval);
-
-    return () => {
-      clearTimeout(timeout);
-      clearTimeout(timer);
-    };
-  }, [quoteInterval]);
+  useQuoteSetter();
+  useScroller();
 
   return (
     <div
       style={{
         boxSizing: "border-box",
-        fontSize: showQuote ? "5rem" : "10vw",
+        fontSize: "50vmin",
         display: "flex",
-        padding: "1rem",
-        flexWrap: "wrap",
-        gap: "1vw",
+        alignItems: "center",
         justifyContent: "center",
+        padding: "1rem",
         width: "100vw",
       }}
     >
@@ -66,14 +33,25 @@ function App() {
           }}
         >
           {currentQuote}
+          <br />
+          <span
+            style={{
+              fontSize: "1rem",
+              position: "fixed",
+              bottom: 0,
+              right: 0,
+              padding: "1rem",
+            }}
+          >
+            Jenny Holzer
+          </span>
         </p>
       ) : (
         <Letter
           style={{
             margin: 0,
-            rotate: "-90deg",
-            width: "20vw",
-            height: "20vw",
+            lineHeight: "1em",
+            transform: "rotate(-90deg)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -83,28 +61,5 @@ function App() {
     </div>
   );
 }
-
-const MAX_DURATION = 5000;
-const MIN_DURATION = 3000;
-const Letter = (props: React.HTMLAttributes<HTMLHeadingElement>) => {
-  const [index, setIndex] = useState(Math.floor(Math.random() * 26));
-
-  const intervalTime = useMemo(() => {
-    return (
-      Math.floor(Math.random() * (MAX_DURATION - MIN_DURATION + 1)) +
-      MIN_DURATION
-    );
-  }, []);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setIndex(() => Math.floor(Math.random() * 26));
-    }, intervalTime);
-
-    return () => clearInterval(interval);
-  }, [index, intervalTime]);
-
-  return <h2 {...props}>{String.fromCharCode(65 + index).toUpperCase()}</h2>;
-};
 
 export default App;
