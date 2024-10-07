@@ -37,7 +37,7 @@ function App() {
           <span
             style={{
               fontSize: "1rem",
-              position: "fixed",
+              position: "absolute",
               bottom: 0,
               right: 0,
               padding: "1rem",

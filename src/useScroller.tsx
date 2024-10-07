@@ -3,8 +3,11 @@ import { useStore } from "./useStore";
 
 export const useScroller = () => {
   const currentQuote = useStore((state) => state.currentQuote);
+  const showQuote = useStore((state) => state.showQuote);
 
   useEffect(() => {
+    if (!showQuote) return;
+
     if (document.scrollingElement) {
       const element = document.scrollingElement;
       const isOverflowing = element.scrollHeight > element.clientHeight;
@@ -29,5 +32,5 @@ export const useScroller = () => {
         requestAnimationFrame(scroll);
       }
     }
-  }, [currentQuote.length]);
+  }, [currentQuote.length, showQuote]);
 };
