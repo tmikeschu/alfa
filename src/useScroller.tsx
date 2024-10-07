@@ -6,7 +6,10 @@ export const useScroller = () => {
   const showQuote = useStore((state) => state.showQuote);
 
   useEffect(() => {
-    if (!showQuote) return;
+    if (!showQuote) {
+      document.scrollingElement?.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
 
     if (document.scrollingElement) {
       const element = document.scrollingElement;
